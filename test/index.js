@@ -1,6 +1,5 @@
 'use strict';
 
-// var es = require('event-stream');
 var legacyLog = require('../');
 var Log = legacyLog.Log;
 

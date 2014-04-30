@@ -12,12 +12,19 @@ module.exports = function(grunt) {
     nodeunit: {
       util: ['test/index.js']
     },
+    watch: {
+      all: {
+        files: ['<%= jshint.all %>'],
+        tasks: ['test'],
+      },
+    },
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-nodeunit');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
   grunt.registerTask('test', ['jshint', 'nodeunit']);
-  grunt.registerTask('default', ['test']);
+  grunt.registerTask('default', ['test', 'watch']);
 
 };
