@@ -23,6 +23,9 @@ _.mixin(_.str.exports());
 // TODO: ADD CHALK
 
 function Log(options) {
+  // This property always refers to the "base" logger.
+  this.always = this;
+  // Extend options.
   this.options = _.extend({}, {
     // Show colors in output?
     color: true,
@@ -36,13 +39,57 @@ function Log(options) {
     grunt: {fail: {errorcount: 0}},
     // Where should output wrap? If null, use legacy Grunt defaults.
     maxCols: null,
+    // Should logger start muted?
+    muted: false,
   }, options);
-  // Allow external muting of output.
-  this.muted = false;
   // True once anything has actually been logged.
   this.hasLogged = false;
+
+  // Related verbose / notverbose loggers.
+  this.verbose = new VerboseLog(this, true);
+  this.notverbose = new VerboseLog(this, false);
+  this.verbose.or = this.notverbose;
+  this.notverbose.or = this.verbose;
 }
 exports.Log = Log;
+
+// Am I doing it wrong? :P
+function VerboseLog(parentLog, verbose) {
+  // Keep track of the original, base "Log" instance.
+  this.always = parentLog;
+  // This logger is either verbose (true) or notverbose (false).
+  this._isVerbose = verbose;
+}
+util.inherits(VerboseLog, Log);
+
+VerboseLog.prototype._write = function() {
+  // Abort if not in correct verbose mode.
+  if (this.options.verbose !== this._isVerbose) { return; }
+  // Otherwise... log!
+  return VerboseLog.super_.prototype._write.apply(this, arguments);
+};
+
+// Create read/write accessors that prefer the parent log's properties (in
+// the case of verbose/notverbose) to the current log's properties.
+function makeSmartAccessor(name, isOption) {
+  Object.defineProperty(Log.prototype, name, {
+    enumerable: true,
+    configurable: true,
+    get: function() {
+      return isOption ? this.always._options[name] : this.always['_' + name];
+    },
+    set: function(value) {
+      if (isOption) {
+        this.always._options[name] = value;
+      } else {
+        this.always['_' + name] = value;
+      }
+    },
+  });
+}
+makeSmartAccessor('options');
+makeSmartAccessor('hasLogged');
+makeSmartAccessor('muted', true);
 
 // Disable colors if --no-colors was passed.
 Log.prototype.initColors = function() {
@@ -203,62 +250,6 @@ Log.prototype.writeflags = function(obj, prefix) {
   return this;
 };
 
-// Am I doing it wrong? :P
-function VerboseLog(parentLog, options) {
-  VerboseLog.super_.call(this, parentLog.options);
-  // If the parent logger has already logged, remember that.
-  this.hasLogged = parentLog.hasLogged;
-  // Keep track of the original, base "Log" instance.
-  this._parentLog = parentLog._parentLog || parentLog;
-  // This logger is either verbose (true) or notverbose (false).
-  this._verboseMode = options.verbose;
-}
-util.inherits(VerboseLog, Log);
-
-VerboseLog.prototype._write = function() {
-  // Abort if not in correct verbose mode.
-  if (this.options.verbose !== this._verboseMode) { return; }
-  // Otherwise... log!
-  return VerboseLog.super_.prototype._write.apply(this, arguments);
-};
-
-Object.defineProperties(Log.prototype, {
-  // Access "verbose" and "notverbose" methods that do the same thing, but are
-  // silent unless the verbose/notverbose methods match the "verbose" option.
-  verbose: {
-    configurable: true,
-    get: function() {
-      return new VerboseLog(this, {verbose: true});
-    },
-  },
-  notverbose: {
-    configurable: true,
-    get: function() {
-      return new VerboseLog(this, {verbose: false});
-    },
-  },
-  // A way to switch between verbose and notverbose modes. For example, this
-  // will write 'foo' if verbose logging is enabled, otherwise write 'bar':
-  // log.verbose.write('foo').or.write('bar');
-  or: {
-    configurable: true,
-    get: function() {
-      if (this instanceof VerboseLog) {
-        return new VerboseLog(this, {verbose: !this._verboseMode});
-      }
-    },
-  },
-  // Return the original Log instance. For example, this will write 'foo' if
-  // verbose logging is enabled, otherwise write 'bar', and will always write
-  // 'baz': log.verbose.write('foo').or.write('bar').always.write('baz');
-  always: {
-    configurable: true,
-    get: function() {
-      return this._parentLog || this;
-    },
-  }
-});
-
 // Static methods.
 
 // Pretty-format a word list.
@@ -335,28 +326,6 @@ Log.prototype.wraptext = exports.wraptext = function(width, text) {
   return result.join('\n');
 };
 
-// todo: write unit tests
-//
-// function logs(text) {
-//   [4, 6, 10, 15, 20, 25, 30, 40].forEach(function(n) {
-//     log(n, text);
-//   });
-// }
-//
-// function log(n, text) {
-//   console.log(Array(n + 1).join('-'));
-//   console.log(wrap(n, text));
-// }
-//
-// var text = 'this is '.red + 'a simple'.yellow.inverse + ' test of'.green + ' ' + 'some wrapped'.blue + ' text over '.inverse.magenta + 'many lines'.red;
-// logs(text);
-//
-// var text = 'foolish '.red.inverse + 'monkeys'.yellow + ' eating'.green + ' ' + 'delicious'.inverse.blue + ' bananas '.magenta + 'forever'.red;
-// logs(text);
-//
-// var text = 'foolish monkeys eating delicious bananas forever'.rainbow;
-// logs(text);
-
 // Format output into columns, wrapping words as-necessary.
 Log.prototype.table = exports.table = function(widths, texts) {
   var rows = [];
@@ -377,7 +346,7 @@ Log.prototype.table = exports.table = function(widths, texts) {
       column = row[i] || '';
       txt += column;
       var diff = widths[i] - this.uncolor(column).length;
-      if (diff > 0) { txt += _.repeat(diff, ' '); }
+      if (diff > 0) { txt += _.repeat(' ', diff); }
     }
     lines.push(txt);
   }, this);
