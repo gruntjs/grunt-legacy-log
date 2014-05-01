@@ -12,7 +12,7 @@ function stdoutEqual(test, callback, expected) {
     // This gets executed before the original process.stdout.write.
     pre: function(result) {
       // Concatenate uncolored result onto actual.
-      actual += legacyLog.uncolor(result);
+      actual += result;
       // Prevent the original process.stdout.write from executing.
       return hooker.preempt();
     },
@@ -22,6 +22,7 @@ function stdoutEqual(test, callback, expected) {
   // Restore process.stdout.write to its original value.
   stdoutUnmute();
   // Actually test the actually-logged stdout string to the expected value.
+  // test.equal(legacyLog.uncolor(actual), expected);
   test.equal(actual, expected);
 }
 
@@ -81,10 +82,10 @@ exports['Log instance'] = {
     test.expect(5);
     var log = new Log({grunt: this.grunt});
 
-    stdoutEqual(test, function() { log.warn(); }, 'ERROR\n');
-    stdoutEqual(test, function() { log.warn('foo'); }, '>> foo\n');
-    stdoutEqual(test, function() { log.warn('%s', 'foo'); }, '>> foo\n');
-    stdoutEqual(test, function() { log.warn(fooBuffer); }, '>> foo\n');
+    stdoutEqual(test, function() { log.warn(); }, 'ERROR'.red + '\n');
+    stdoutEqual(test, function() { log.warn('foo'); }, '>> '.red + 'foo\n');
+    stdoutEqual(test, function() { log.warn('%s', 'foo'); }, '>> '.red + 'foo\n');
+    stdoutEqual(test, function() { log.warn(fooBuffer); }, '>> '.red + 'foo\n');
     test.equal(this.grunt.fail.errorcount, 0);
 
     test.done();
@@ -93,10 +94,10 @@ exports['Log instance'] = {
     test.expect(5);
     var log = new Log({grunt: this.grunt});
 
-    stdoutEqual(test, function() { log.error(); }, 'ERROR\n');
-    stdoutEqual(test, function() { log.error('foo'); }, '>> foo\n');
-    stdoutEqual(test, function() { log.error('%s', 'foo'); }, '>> foo\n');
-    stdoutEqual(test, function() { log.error(fooBuffer); }, '>> foo\n');
+    stdoutEqual(test, function() { log.error(); }, 'ERROR'.red + '\n');
+    stdoutEqual(test, function() { log.error('foo'); }, '>> '.red + 'foo\n');
+    stdoutEqual(test, function() { log.error('%s', 'foo'); }, '>> '.red + 'foo\n');
+    stdoutEqual(test, function() { log.error(fooBuffer); }, '>> '.red + 'foo\n');
     test.equal(this.grunt.fail.errorcount, 4);
 
     test.done();
@@ -105,10 +106,10 @@ exports['Log instance'] = {
     test.expect(4);
     var log = new Log({grunt: this.grunt});
 
-    stdoutEqual(test, function() { log.ok(); }, 'OK\n');
-    stdoutEqual(test, function() { log.ok('foo'); }, '>> foo\n');
-    stdoutEqual(test, function() { log.ok('%s', 'foo'); }, '>> foo\n');
-    stdoutEqual(test, function() { log.ok(fooBuffer); }, '>> foo\n');
+    stdoutEqual(test, function() { log.ok(); }, 'OK'.green + '\n');
+    stdoutEqual(test, function() { log.ok('foo'); }, '>> '.green + 'foo\n');
+    stdoutEqual(test, function() { log.ok('%s', 'foo'); }, '>> '.green + 'foo\n');
+    stdoutEqual(test, function() { log.ok(fooBuffer); }, '>> '.green + 'foo\n');
 
     test.done();
   },
@@ -118,8 +119,8 @@ exports['Log instance'] = {
 
     stdoutEqual(test, function() {
       log.errorlns(repeat('foo', 30, ' '));
-    }, '>> ' + repeat('foo', 19, ' ') + '\n' +
-      '>> ' + repeat('foo', 11, ' ') + '\n');
+    }, '>> '.red + repeat('foo', 19, ' ') +
+      '\n>> '.red + repeat('foo', 11, ' ') + '\n');
     test.equal(this.grunt.fail.errorcount, 1);
 
     test.done();
@@ -130,8 +131,8 @@ exports['Log instance'] = {
 
     stdoutEqual(test, function() {
       log.oklns(repeat('foo', 30, ' '));
-    }, '>> ' + repeat('foo', 19, ' ') + '\n' +
-      '>> ' + repeat('foo', 11, ' ') + '\n');
+    }, '>> '.green + repeat('foo', 19, ' ') +
+      '\n>> '.green + repeat('foo', 11, ' ') + '\n');
 
     test.done();
   },
@@ -139,10 +140,10 @@ exports['Log instance'] = {
     test.expect(4);
     var log = new Log();
 
-    stdoutEqual(test, function() { log.success(); }, '\n');
-    stdoutEqual(test, function() { log.success('foo'); }, 'foo\n');
-    stdoutEqual(test, function() { log.success('%s', 'foo'); }, 'foo\n');
-    stdoutEqual(test, function() { log.success(fooBuffer); }, 'foo\n');
+    stdoutEqual(test, function() { log.success(); }, ''.green + '\n');
+    stdoutEqual(test, function() { log.success('foo'); }, 'foo'.green + '\n');
+    stdoutEqual(test, function() { log.success('%s', 'foo'); }, 'foo'.green + '\n');
+    stdoutEqual(test, function() { log.success(fooBuffer); }, 'foo'.green + '\n');
 
     test.done();
   },
@@ -150,10 +151,10 @@ exports['Log instance'] = {
     test.expect(4);
     var log = new Log();
 
-    stdoutEqual(test, function() { log.fail(); }, '\n');
-    stdoutEqual(test, function() { log.fail('foo'); }, 'foo\n');
-    stdoutEqual(test, function() { log.fail('%s', 'foo'); }, 'foo\n');
-    stdoutEqual(test, function() { log.fail(fooBuffer); }, 'foo\n');
+    stdoutEqual(test, function() { log.fail(); }, ''.red + '\n');
+    stdoutEqual(test, function() { log.fail('foo'); }, 'foo'.red + '\n');
+    stdoutEqual(test, function() { log.fail('%s', 'foo'); }, 'foo'.red + '\n');
+    stdoutEqual(test, function() { log.fail(fooBuffer); }, 'foo'.red + '\n');
 
     test.done();
   },
@@ -161,11 +162,11 @@ exports['Log instance'] = {
     test.expect(5);
     var log = new Log();
 
-    stdoutEqual(test, function() { log.header(); }, '\n');
-    stdoutEqual(test, function() { log.header(); }, '\n\n');
-    stdoutEqual(test, function() { log.header('foo'); }, '\nfoo\n');
-    stdoutEqual(test, function() { log.header('%s', 'foo'); }, '\nfoo\n');
-    stdoutEqual(test, function() { log.header(fooBuffer); }, '\nfoo\n');
+    stdoutEqual(test, function() { log.header(); }, ''.underline + '\n');
+    stdoutEqual(test, function() { log.header(); }, '\n' + ''.underline + '\n');
+    stdoutEqual(test, function() { log.header('foo'); }, '\n' + 'foo'.underline + '\n');
+    stdoutEqual(test, function() { log.header('%s', 'foo'); }, '\n' + 'foo'.underline + '\n');
+    stdoutEqual(test, function() { log.header(fooBuffer); }, '\n' + 'foo'.underline + '\n');
 
     test.done();
   },
@@ -173,30 +174,11 @@ exports['Log instance'] = {
     test.expect(5);
     var log = new Log();
 
-    stdoutEqual(test, function() { log.subhead(); }, '\n');
-    stdoutEqual(test, function() { log.subhead(); }, '\n\n');
-    stdoutEqual(test, function() { log.subhead('foo'); }, '\nfoo\n');
-    stdoutEqual(test, function() { log.subhead('%s', 'foo'); }, '\nfoo\n');
-    stdoutEqual(test, function() { log.subhead(fooBuffer); }, '\nfoo\n');
-
-    test.done();
-  },
-  'options.debug = true': function(test) {
-    test.expect(4);
-    var log = new Log({debug: true});
-
-    stdoutEqual(test, function() { log.debug(); }, '[D] \n');
-    stdoutEqual(test, function() { log.debug('foo'); }, '[D] foo\n');
-    stdoutEqual(test, function() { log.debug('%s', 'foo'); }, '[D] foo\n');
-    stdoutEqual(test, function() { log.debug(fooBuffer); }, '[D] foo\n');
-
-    test.done();
-  },
-  'options.debug = false': function(test) {
-    test.expect(1);
-    var log = new Log({debug: false});
-
-    stdoutEqual(test, function() { log.debug('foo'); }, '');
+    stdoutEqual(test, function() { log.subhead(); }, ''.bold + '\n');
+    stdoutEqual(test, function() { log.subhead(); }, '\n' + ''.bold + '\n');
+    stdoutEqual(test, function() { log.subhead('foo'); }, '\n' + 'foo'.bold + '\n');
+    stdoutEqual(test, function() { log.subhead('%s', 'foo'); }, '\n' + 'foo'.bold + '\n');
+    stdoutEqual(test, function() { log.subhead(fooBuffer); }, '\n' + 'foo'.bold + '\n');
 
     test.done();
   },
@@ -222,12 +204,18 @@ exports['Log instance'] = {
     test.done();
   },
   'writeflags': function(test) {
-    test.expect(1);
+    test.expect(3);
     var log = new Log();
 
     stdoutEqual(test, function() {
-      log.writeflags(['foo', 'bar'], 'test');
-    }, 'test: foo, bar\n');
+      log.writeflags(['a', 'b']);
+    }, 'Flags: ' + 'a'.cyan + ', ' + 'b'.cyan + '\n');
+    stdoutEqual(test, function() {
+      log.writeflags(['a', 'b'], 'Prefix');
+    }, 'Prefix: ' + 'a'.cyan + ', ' + 'b'.cyan + '\n');
+    stdoutEqual(test, function() {
+      log.writeflags({a: true, b: false, c: 0, d: null}, 'Prefix');
+    }, 'Prefix: ' + 'a'.cyan + ', ' + 'b=false'.cyan + ', ' + 'c=0'.cyan + ', ' + 'd=null'.cyan + '\n');
 
     test.done();
   },
@@ -394,6 +382,69 @@ exports['Log instance'] = {
     test.strictEqual(log.notverbose.writetableln([]), log.notverbose);
     test.strictEqual(log.notverbose.writelns(''), log.notverbose);
     test.strictEqual(log.notverbose.writeflags([]), log.notverbose);
+
+    test.done();
+  },
+  'options.debug = true': function(test) {
+    test.expect(4);
+    var log = new Log({debug: true});
+
+    stdoutEqual(test, function() { log.debug(); }, '[D] ' + ''.magenta + '\n');
+    stdoutEqual(test, function() { log.debug('foo'); }, '[D] ' + 'foo'.magenta + '\n');
+    stdoutEqual(test, function() { log.debug('%s', 'foo'); }, '[D] ' + 'foo'.magenta + '\n');
+    stdoutEqual(test, function() { log.debug(fooBuffer); }, '[D] ' + 'foo'.magenta + '\n');
+
+    test.done();
+  },
+  'options.verbose = false': function(test) {
+    test.expect(7);
+    var log = new Log({verbose: false});
+
+    stdoutEqual(test, function() { log.notverbose.write('foo'); }, 'foo');
+    stdoutEqual(test, function() { log.notverbose.write('%s', 'foo'); }, 'foo');
+    stdoutEqual(test, function() { log.notverbose.write(fooBuffer); }, 'foo');
+    stdoutEqual(test, function() { log.verbose.write('foo'); }, '');
+    stdoutEqual(test, function() { log.verbose.write('%s', 'foo'); }, '');
+    stdoutEqual(test, function() { log.verbose.write(fooBuffer); }, '');
+    stdoutEqual(test, function() { log.verbose.write('a').or.write('b'); }, 'b');
+
+    test.done();
+  },
+  'options.verbose = true': function(test) {
+    test.expect(7);
+    var log = new Log({verbose: true});
+
+    stdoutEqual(test, function() { log.verbose.write('foo'); }, 'foo');
+    stdoutEqual(test, function() { log.verbose.write('%s', 'foo'); }, 'foo');
+    stdoutEqual(test, function() { log.verbose.write(fooBuffer); }, 'foo');
+    stdoutEqual(test, function() { log.notverbose.write('foo'); }, '');
+    stdoutEqual(test, function() { log.notverbose.write('%s', 'foo'); }, '');
+    stdoutEqual(test, function() { log.notverbose.write(fooBuffer); }, '');
+    stdoutEqual(test, function() { log.notverbose.write('a').or.write('b'); }, 'b');
+
+    test.done();
+  },
+  'options.debug = false': function(test) {
+    test.expect(1);
+    var log = new Log({debug: false});
+
+    stdoutEqual(test, function() { log.debug('foo'); }, '');
+
+    test.done();
+  },
+  'options.color = true': function(test) {
+    test.expect(1);
+    var log = new Log({color: true});
+
+    stdoutEqual(test, function() { log.write('foo'.blue + 'bar'.underline); }, 'foo'.blue + 'bar'.underline);
+
+    test.done();
+  },
+  'options.color = false': function(test) {
+    test.expect(1);
+    var log = new Log({color: false});
+
+    stdoutEqual(test, function() { log.write('foo'.blue + 'bar'.underline); }, 'foobar');
 
     test.done();
   },

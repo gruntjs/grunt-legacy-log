@@ -35,8 +35,10 @@ function Log(options) {
     debug: false,
     // Where should messages be output?
     outStream: process.stdout,
-    // The error method increments this counter. Used by Grunt.
-    grunt: {fail: {errorcount: 0}},
+    // NOTE: the color, verbose, debug options will be ignored if the
+    // "grunt" option is specified! See the Log.prototype.option and
+    // the Log.prototype.error methods for more info.
+    grunt: null,
     // Where should output wrap? If null, use legacy Grunt defaults.
     maxCols: null,
     // Should logger start muted?
@@ -64,7 +66,7 @@ util.inherits(VerboseLog, Log);
 
 VerboseLog.prototype._write = function() {
   // Abort if not in correct verbose mode.
-  if (this.options.verbose !== this._isVerbose) { return; }
+  if (Boolean(this.option('verbose')) !== this._isVerbose) { return; }
   // Otherwise... log!
   return VerboseLog.super_.prototype._write.apply(this, arguments);
 };
@@ -93,7 +95,7 @@ makeSmartAccessor('muted', true);
 
 // Disable colors if --no-colors was passed.
 Log.prototype.initColors = function() {
-  if (!this.options.color) {
+  if (this.option('no-color')) {
     // String color getters should just return the string.
     colors.mode = 'none';
     // Strip colors from strings passed to console.log.
@@ -104,6 +106,16 @@ Log.prototype.initColors = function() {
       }));
     });
   }
+};
+
+// Check for color, verbose, debug options through Grunt if specified,
+// otherwise defer to options object properties.
+Log.prototype.option = function(name) {
+  if (this.options.grunt && this.options.grunt.option) {
+    return this.options.grunt.option(name);
+  }
+  var no = name.match(/^no-(.+)$/);
+  return no ? !this.options[no[1]] : this.options[name];
 };
 
 // Parse certain markup in strings to be logged.
@@ -134,7 +146,7 @@ Log.prototype._write = function(msg) {
   msg = msg || '';
   // Users should probably use the colors-provided methods, but if they
   // don't, this should strip extraneous color codes.
-  if (!this.options.color) { msg = colors.stripColors(msg); }
+  if (this.option('no-color')) { msg = colors.stripColors(msg); }
   // Actually write to stdout.
   this.options.outStream.write(this._markup(msg));
 };
@@ -166,7 +178,9 @@ Log.prototype.warn = function() {
   return this;
 };
 Log.prototype.error = function() {
-  this.options.grunt.fail.errorcount++;
+  if (this.options.grunt && this.options.grunt.fail) {
+    this.options.grunt.fail.errorcount++;
+  }
   this.warn.apply(this, arguments);
   return this;
 };
@@ -216,7 +230,7 @@ Log.prototype.subhead = function() {
 // For debugging.
 Log.prototype.debug = function() {
   var msg = this._format(arguments);
-  if (this.options.debug) {
+  if (this.option('debug')) {
     this._writeln('[D] ' + msg.magenta);
   }
   return this;
