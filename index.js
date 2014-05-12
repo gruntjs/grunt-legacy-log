@@ -52,6 +52,14 @@ function Log(options) {
   this.notverbose = new VerboseLog(this, false);
   this.verbose.or = this.notverbose;
   this.notverbose.or = this.verbose;
+
+  // Apparently, people have using grunt.log in interesting ways. Just bind
+  // all methods so that "this" is irrelevant.
+  if (this.options.grunt) {
+    _.bindAll(this);
+    _.bindAll(this.verbose);
+    _.bindAll(this.notverbose);
+  }
 }
 exports.Log = Log;
 

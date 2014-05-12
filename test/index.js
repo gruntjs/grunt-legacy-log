@@ -448,6 +448,43 @@ exports['Log instance'] = {
 
     test.done();
   },
+  'perma-bind this when passing grunt in (backcompat)': function(test) {
+    test.expect(43);
+    var log = new Log({grunt: this.grunt});
+    stdoutMute();
+    [
+      'write',
+      'writeln',
+      'warn',
+      'error',
+      'ok',
+      'errorlns',
+      'oklns',
+      'success',
+      'fail',
+      'header',
+      'subhead',
+      'debug',
+    ].forEach(function(method) {
+      var fn = log[method];
+      var verboseFn = log.verbose[method];
+      var notVerboseFn = log.notverbose[method];
+      test.equal(fn(), log, 'Should return log if invoked in a way where this is not log.');
+      test.equal(verboseFn(), log.verbose, 'Should return log.verbose if invoked in a way where this is not log.');
+      test.equal(notVerboseFn(), log.notverbose, 'Should return log.notverbose if invoked in a way where this is not log.');
+    });
+
+    test.doesNotThrow(function() { var fn = log.writetableln; fn([]); }, 'Should not throw if invoked in a way where this is not log.');
+    test.doesNotThrow(function() { var fn = log.writelns; fn([]); }, 'Should not throw if invoked in a way where this is not log.');
+    test.doesNotThrow(function() { var fn = log.writeflags; fn([]); }, 'Should not throw if invoked in a way where this is not log.');
+    test.doesNotThrow(function() { var fn = log.wordlist; fn([]); }, 'Should not throw if invoked in a way where this is not log.');
+    test.doesNotThrow(function() { var fn = log.uncolor; fn(''); }, 'Should not throw if invoked in a way where this is not log.');
+    test.doesNotThrow(function() { var fn = log.wraptext; fn(1,''); }, 'Should not throw if invoked in a way where this is not log.');
+    test.doesNotThrow(function() { var fn = log.table; fn([],''); }, 'Should not throw if invoked in a way where this is not log.');
+    stdoutUnmute();
+
+    test.done();
+  },
 };
 
 exports['Helpers'] = {
