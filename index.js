@@ -61,7 +61,7 @@ function Log(options) {
     _.bindAll(this.notverbose);
   }
 }
-exports.Log = Log;
+module.exports = Log;
 
 // Am I doing it wrong? :P
 function VerboseLog(parentLog, verbose) {
@@ -275,7 +275,7 @@ Log.prototype.writeflags = function(obj, prefix) {
 // Static methods.
 
 // Pretty-format a word list.
-Log.prototype.wordlist = exports.wordlist = function(arr, options) {
+Log.prototype.wordlist = module.exports.wordlist = function(arr, options) {
   options = _.defaults(options || {}, {
     separator: ', ',
     color: 'cyan'
@@ -286,12 +286,12 @@ Log.prototype.wordlist = exports.wordlist = function(arr, options) {
 };
 
 // Return a string, uncolored (suitable for testing .length, etc).
-Log.prototype.uncolor = exports.uncolor = function(str) {
+Log.prototype.uncolor = module.exports.uncolor = function(str) {
   return str.replace(/\x1B\[\d+m/g, '');
 };
 
 // Word-wrap text to a given width, permitting ANSI color codes.
-Log.prototype.wraptext = exports.wraptext = function(width, text) {
+Log.prototype.wraptext = module.exports.wraptext = function(width, text) {
   // notes to self:
   // grab 1st character or ansi code from string
   // if ansi code, add to array and save for later, strip from front of string
@@ -349,7 +349,7 @@ Log.prototype.wraptext = exports.wraptext = function(width, text) {
 };
 
 // Format output into columns, wrapping words as-necessary.
-Log.prototype.table = exports.table = function(widths, texts) {
+Log.prototype.table = module.exports.table = function(widths, texts) {
   var rows = [];
   widths.forEach(function(width, i) {
     var lines = this.wraptext(width, texts[i]).split('\n');
