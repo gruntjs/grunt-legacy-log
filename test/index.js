@@ -1,7 +1,6 @@
 'use strict';
 
-var legacyLog = require('../');
-var Log = legacyLog.Log;
+var Log = require('../');
 
 // Helper for testing stdout
 var hooker = require('hooker');
@@ -22,7 +21,7 @@ function stdoutEqual(test, callback, expected) {
   // Restore process.stdout.write to its original value.
   stdoutUnmute();
   // Actually test the actually-logged stdout string to the expected value.
-  // test.equal(legacyLog.uncolor(actual), expected);
+  // test.equal(Log.uncolor(actual), expected);
   test.equal(actual, expected);
 }
 
@@ -495,8 +494,8 @@ exports['Helpers'] = {
     test.expect(2);
     var log = new Log();
 
-    test.strictEqual(log.uncolor, legacyLog.uncolor);
-    test.equal(legacyLog.uncolor('a'.red + 'b'.bold.green + 'c'.blue.underline), 'abc');
+    test.strictEqual(log.uncolor, Log.uncolor);
+    test.equal(Log.uncolor('a'.red + 'b'.bold.green + 'c'.blue.underline), 'abc');
 
     test.done();
   },
@@ -504,9 +503,9 @@ exports['Helpers'] = {
     test.expect(3);
     var log = new Log();
 
-    test.strictEqual(log.wordlist, legacyLog.wordlist);
-    test.equal(legacyLog.uncolor(legacyLog.wordlist(['a', 'b'])), 'a, b');
-    test.equal(legacyLog.uncolor(legacyLog.wordlist(['a', 'b'], {separator: '-'})), 'a-b');
+    test.strictEqual(log.wordlist, Log.wordlist);
+    test.equal(Log.uncolor(Log.wordlist(['a', 'b'])), 'a, b');
+    test.equal(Log.uncolor(Log.wordlist(['a', 'b'], {separator: '-'})), 'a-b');
 
     test.done();
   },
@@ -524,7 +523,7 @@ exports['Helpers'] = {
     // }
     // function doOne(n, text) {
     //   console.log(new Array(n + 1).join('-'));
-    //   console.log(legacyLog.wraptext(n, text));
+    //   console.log(Log.wraptext(n, text));
     // }
     // var text = 'this is '.red + 'a simple'.yellow.inverse + ' test of'.green + ' ' + 'some wrapped'.blue + ' text over '.inverse.magenta + 'many lines'.red;
     // doAll(text);
@@ -533,15 +532,15 @@ exports['Helpers'] = {
     // text = 'foolish monkeys eating delicious bananas forever'.rainbow;
     // doAll(text);
 
-    test.strictEqual(log.wraptext, legacyLog.wraptext);
-    test.equal(legacyLog.wraptext(2, 'aabbc'), 'aa\nbb\nc');
-    test.equal(legacyLog.wraptext(2, 'aabbcc'), 'aa\nbb\ncc');
-    test.equal(legacyLog.wraptext(3, 'aaabbbc'), 'aaa\nbbb\nc');
-    test.equal(legacyLog.wraptext(3, 'aaabbbcc'), 'aaa\nbbb\ncc');
-    test.equal(legacyLog.wraptext(3, 'aaabbbccc'), 'aaa\nbbb\nccc');
-    test.equal(legacyLog.uncolor(legacyLog.wraptext(3, 'aaa'.blue + 'bbb'.green + 'c'.underline)), 'aaa\nbbb\nc');
-    test.equal(legacyLog.uncolor(legacyLog.wraptext(3, 'aaa'.blue + 'bbb'.green + 'cc'.underline)), 'aaa\nbbb\ncc');
-    test.equal(legacyLog.uncolor(legacyLog.wraptext(3, 'aaa'.blue + 'bbb'.green + 'ccc'.underline)), 'aaa\nbbb\nccc');
+    test.strictEqual(log.wraptext, Log.wraptext);
+    test.equal(Log.wraptext(2, 'aabbc'), 'aa\nbb\nc');
+    test.equal(Log.wraptext(2, 'aabbcc'), 'aa\nbb\ncc');
+    test.equal(Log.wraptext(3, 'aaabbbc'), 'aaa\nbbb\nc');
+    test.equal(Log.wraptext(3, 'aaabbbcc'), 'aaa\nbbb\ncc');
+    test.equal(Log.wraptext(3, 'aaabbbccc'), 'aaa\nbbb\nccc');
+    test.equal(Log.uncolor(Log.wraptext(3, 'aaa'.blue + 'bbb'.green + 'c'.underline)), 'aaa\nbbb\nc');
+    test.equal(Log.uncolor(Log.wraptext(3, 'aaa'.blue + 'bbb'.green + 'cc'.underline)), 'aaa\nbbb\ncc');
+    test.equal(Log.uncolor(Log.wraptext(3, 'aaa'.blue + 'bbb'.green + 'ccc'.underline)), 'aaa\nbbb\nccc');
 
     test.done();
   },
@@ -549,8 +548,8 @@ exports['Helpers'] = {
     test.expect(2);
     var log = new Log();
 
-    test.strictEqual(log.table, legacyLog.table);
-    test.equal(legacyLog.table([3, 1, 5, 1, 8, 1, 12, 1, 20], [
+    test.strictEqual(log.table, Log.table);
+    test.equal(Log.table([3, 1, 5, 1, 8, 1, 12, 1, 20], [
       'a aa aaa aaaa aaaaa',
       '|||||||',
       'b bb bbb bbbb bbbbb',
