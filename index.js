@@ -15,7 +15,8 @@ var util = require('util');
 // External libs.
 var hooker = require('hooker');
 // Requiring this here modifies the String prototype!
-var colors = require('colors');
+var chalk = new require('chalk');
+chalk.enabled = true;
 // The upcoming lodash 2.5+ should remove the need for underscore.string.
 var _ = require('lodash');
 _.str = require('underscore.string');
@@ -107,12 +108,12 @@ makeSmartAccessor('muted', true);
 Log.prototype.initColors = function() {
   if (this.option('no-color')) {
     // String color getters should just return the string.
-    colors.mode = 'none';
+    chalk.enabled = false;
     // Strip colors from strings passed to console.log.
     hooker.hook(console, 'log', function() {
       var args = _.toArray(arguments);
       return hooker.filter(this, args.map(function(arg) {
-        return typeof arg === 'string' ? colors.stripColors(arg) : arg;
+        return typeof arg === 'string' ? chalk.stripColor(arg) : arg;
       }));
     });
   }
@@ -132,9 +133,9 @@ Log.prototype.option = function(name) {
 Log.prototype._markup = function(str) {
   str = str || '';
   // Make _foo_ underline.
-  str = str.replace(/(\s|^)_(\S|\S[\s\S]+?\S)_(?=[\s,.!?]|$)/g, '$1' + '$2'.underline);
+  str = str.replace(/(\s|^)_(\S|\S[\s\S]+?\S)_(?=[\s,.!?]|$)/g, '$1' + chalk.underline('$2'));
   // Make *foo* bold.
-  str = str.replace(/(\s|^)\*(\S|\S[\s\S]+?\S)\*(?=[\s,.!?]|$)/g, '$1' + '$2'.bold);
+  str = str.replace(/(\s|^)\*(\S|\S[\s\S]+?\S)\*(?=[\s,.!?]|$)/g, '$1' + chalk.bold('$2'));
   return str;
 };
 
@@ -156,7 +157,7 @@ Log.prototype._write = function(msg) {
   msg = msg || '';
   // Users should probably use the colors-provided methods, but if they
   // don't, this should strip extraneous color codes.
-  if (this.option('no-color')) { msg = colors.stripColors(msg); }
+  if (this.option('no-color')) { msg = chalk.stripColor(msg); }
   // Actually write to stdout.
   this.options.outStream.write(this._markup(msg));
 };
@@ -181,9 +182,9 @@ Log.prototype.writeln = function() {
 Log.prototype.warn = function() {
   var msg = this._format(arguments);
   if (arguments.length > 0) {
-    this._writeln('>> '.red + _.trim(msg).replace(/\n/g, '\n>> '.red));
+    this._writeln(chalk.red('>> ') + _.trim(msg).replace(/\n/g, chalk.red('\n>> ')));
   } else {
-    this._writeln('ERROR'.red);
+    this._writeln(chalk.red('ERROR'));
   }
   return this;
 };
@@ -197,9 +198,9 @@ Log.prototype.error = function() {
 Log.prototype.ok = function() {
   var msg = this._format(arguments);
   if (arguments.length > 0) {
-    this._writeln('>> '.green + _.trim(msg).replace(/\n/g, '\n>> '.green));
+    this._writeln(chalk.green('>> ') + _.trim(msg).replace(/\n/g, chalk.green('\n>> ')));
   } else {
-    this._writeln('OK'.green);
+    this._writeln(chalk.green('OK'));
   }
   return this;
 };
@@ -215,33 +216,33 @@ Log.prototype.oklns = function() {
 };
 Log.prototype.success = function() {
   var msg = this._format(arguments);
-  this._writeln(msg.green);
+  this._writeln(chalk.green(msg));
   return this;
 };
 Log.prototype.fail = function() {
   var msg = this._format(arguments);
-  this._writeln(msg.red);
+  this._writeln(chalk.red(msg));
   return this;
 };
 Log.prototype.header = function() {
   var msg = this._format(arguments);
   // Skip line before header, but not if header is the very first line output.
   if (this.hasLogged) { this._writeln(); }
-  this._writeln(msg.underline);
+  this._writeln(chalk.underline(msg));
   return this;
 };
 Log.prototype.subhead = function() {
   var msg = this._format(arguments);
   // Skip line before subhead, but not if subhead is the very first line output.
   if (this.hasLogged) { this._writeln(); }
-  this._writeln(msg.bold);
+  this._writeln(chalk.bold(msg));
   return this;
 };
 // For debugging.
 Log.prototype.debug = function() {
   var msg = this._format(arguments);
   if (this.option('debug')) {
-    this._writeln('[D] ' + msg.magenta);
+    this._writeln('[D] ' + chalk.magenta(msg));
   }
   return this;
 };
@@ -270,7 +271,7 @@ Log.prototype.writeflags = function(obj, prefix) {
       return key + (val === true ? '' : '=' + JSON.stringify(val));
     }));
   }
-  this._writeln((prefix || 'Flags') + ': ' + (wordlist || '(none)'.cyan));
+  this._writeln((prefix || 'Flags') + ': ' + (wordlist || chalk.cyan('(none)')));
   return this;
 };
 
