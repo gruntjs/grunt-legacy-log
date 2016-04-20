@@ -1,8 +1,7 @@
 'use strict';
 
-var legacyLog = require('../');
-var Log = legacyLog.Log;
-
+var log = require('../').Log;
+var Log = new log(options);
 // Helper for testing stdout
 var hooker = require('hooker');
 function stdoutEqual(test, callback, expected) {
