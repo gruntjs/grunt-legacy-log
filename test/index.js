@@ -205,7 +205,8 @@ exports['Log instance'] = {
   },
   'writeflags': function(test) {
     test.expect(3);
-    var log = new Log();
+    var PathToLog = require('../').Log;
+    var log = new PathToLog();
 
     stdoutEqual(test, function() {
       log.writeflags(['a', 'b']);
