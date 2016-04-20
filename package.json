@@ -24,14 +24,14 @@
     "legacy"
   ],
   "dependencies": {
-    "colors": "~1.1.2",
+    "colors": "Marak/colors.js.git#2e22e4d4f20d84b1a1ad8b7f2b385feb720e6428",
     "grunt-legacy-log-utils": "~1.0.0",
     "hooker": "~0.2.3",
     "lodash": "~3.10.1",
     "underscore.string": "~3.2.3"
   },
   "devDependencies": {
-    "grunt": "^0.4.5",
+    "grunt": "^1.0.1",
     "grunt-cli": "^1.2.0",
     "grunt-contrib-jshint": "^1.0.0",
     "grunt-contrib-nodeunit": "^1.0.0",
