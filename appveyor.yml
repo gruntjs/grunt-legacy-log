@@ -8,11 +8,6 @@ environment:
     - nodejs_version: "0.12"
     - nodejs_version: "4"
     - nodejs_version: "5"
-  allow_failures:
-    - nodejs_version: 0.10
-    - nodejs_version: 0.12
-    - nodejs_version: 4
-    - nodejs_version: 5
 platform:
   - x86
   - x64
@@ -29,6 +24,9 @@ test_script:
   - cmd: npm test
 build: off
 matrix:
+  allow_failures:
+    - platform: x86
+    - platform: x64
   fast_finish: true
 cache:
   - node_modules -> package.json # local npm modules
