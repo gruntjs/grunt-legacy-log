@@ -1,6 +1,6 @@
 'use strict';
 
-var legacyLog = require('../');
+var legacyLog = require('./../');
 var Log = legacyLog.Log;
 
 // Helper for testing stdout
@@ -205,8 +205,7 @@ exports['Log instance'] = {
   },
   'writeflags': function(test) {
     test.expect(3);
-    var PathToLog = require('../').Log;
-    var log = new PathToLog();
+    var log = new Log();
 
     stdoutEqual(test, function() {
       log.writeflags(['a', 'b']);
