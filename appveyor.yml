@@ -25,10 +25,5 @@ test_script:
 build: off
 matrix:
   fast_finish: true
-  allow_failures:
-    - nodejs_version: "0.10"
-    - nodejs_version: "0.12"
-    - nodejs_version: "4"
-    - nodejs_version: "5"
 cache:
   - node_modules -> package.json # local npm modules
