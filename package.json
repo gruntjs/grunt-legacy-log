@@ -24,7 +24,7 @@
     "legacy"
   ],
   "dependencies": {
-    "colors": "Mark/colors.js.git#2e22e4d4f20d84b1a1ad8b7f2b385feb720e6428",
+    "colors": "Marak/colors.js.git#2e22e4d4f20d84b1a1ad8b7f2b385feb720e6428",
     "grunt-legacy-log-utils": "~1.0.0",
     "hooker": "~0.2.3",
     "lodash": "~3.10.1",
