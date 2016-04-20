@@ -25,8 +25,10 @@ test_script:
 build: off
 matrix:
   allow_failures:
-    - platform: x86
-    - platform: x64
+    - nodejs_version: "0.10"
+    - nodejs_version: "0.12"
+    - nodejs_version: "4"
+    - nodejs_version: "5"
   fast_finish: true
 cache:
   - node_modules -> package.json # local npm modules
