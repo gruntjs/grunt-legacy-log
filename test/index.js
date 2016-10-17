@@ -1,6 +1,6 @@
 'use strict';
 
-var legacyLog = require('../');
+var legacyLog = require('./../');
 var Log = legacyLog.Log;
 
 // Helper for testing stdout
