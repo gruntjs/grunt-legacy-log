@@ -33,11 +33,13 @@ function Log(options) {
     color: true,
     // Enable verbose-mode logging?
     verbose: false,
+    // Show >> in output?
+    greaterSigns: true,
     // Enable debug logging statement?
     debug: false,
     // Where should messages be output?
     outStream: process.stdout,
-    // NOTE: the color, verbose, debug options will be ignored if the
+    // NOTE: the color, verbose, greaterSigns, debug options will be ignored if the
     // "grunt" option is specified! See the Log.prototype.option and
     // the Log.prototype.error methods for more info.
     grunt: null,
@@ -118,7 +120,7 @@ Log.prototype.initColors = function() {
   }
 };
 
-// Check for color, verbose, debug options through Grunt if specified,
+// Check for color, verbose, greaterSigns, debug options through Grunt if specified,
 // otherwise defer to options object properties.
 Log.prototype.option = function(name) {
   if (this.options.grunt && this.options.grunt.option) {
@@ -181,7 +183,11 @@ Log.prototype.writeln = function() {
 Log.prototype.warn = function() {
   var msg = this._format(arguments);
   if (arguments.length > 0) {
-    this._writeln('>> '.red + _.trim(msg).replace(/\n/g, '\n>> '.red));
+	if (this.option('no-greaterSigns')) {
+		this._writeln(msg.red);
+	}else{
+		this._writeln('>> '.red + _.trim(msg).replace(/\n/g, '\n>> '.red));
+	}
   } else {
     this._writeln('ERROR'.red);
   }
@@ -197,7 +203,11 @@ Log.prototype.error = function() {
 Log.prototype.ok = function() {
   var msg = this._format(arguments);
   if (arguments.length > 0) {
-    this._writeln('>> '.green + _.trim(msg).replace(/\n/g, '\n>> '.green));
+	if (this.option('no-greaterSigns')) {
+		this._writeln(msg.green);
+	}else{
+		this._writeln('>> '.green + _.trim(msg).replace(/\n/g, '\n>> '.green));
+	}
   } else {
     this._writeln('OK'.green);
   }
