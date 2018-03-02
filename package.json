@@ -27,8 +27,8 @@
     "colors": "~1.1.2",
     "grunt-legacy-log-utils": "~1.0.0",
     "hooker": "~0.2.3",
-    "lodash": "~3.10.1",
-    "underscore.string": "~3.2.3"
+    "lodash": "~4.17.5",
+    "underscore.string": "~3.3.4"
   },
   "devDependencies": {
     "grunt": "^1.0.1",

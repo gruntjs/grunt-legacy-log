@@ -58,9 +58,26 @@ function Log(options) {
   // Apparently, people have using grunt.log in interesting ways. Just bind
   // all methods so that "this" is irrelevant.
   if (this.options.grunt) {
-    _.bindAll(this);
-    _.bindAll(this.verbose);
-    _.bindAll(this.notverbose);
+    var properties = [
+      'write',
+      'writeln',
+      'writetableln',
+      'writelns',
+      'writeflags',
+      'warn',
+      'error',
+      'ok',
+      'errorlns',
+      'oklns',
+      'success',
+      'fail',
+      'header',
+      'subhead',
+      'debug'
+    ];
+    _.bindAll(this, properties);
+    _.bindAll(this.verbose, properties);
+    _.bindAll(this.notverbose, properties);
   }
 }
 exports.Log = Log;
