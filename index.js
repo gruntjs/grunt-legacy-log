@@ -15,7 +15,7 @@ var util = require('util');
 // External libs.
 var hooker = require('hooker');
 // Requiring this here modifies the String prototype!
-var colors = require('colors');
+var colors = require('colors/lib/index');
 // The upcoming lodash 2.5+ should remove the need for underscore.string.
 var _ = require('lodash');
 _.str = require('underscore.string');
