@@ -16,6 +16,7 @@ var util = require('util');
 var hooker = require('hooker');
 // Requiring this here modifies the String prototype!
 var colors = require('colors');
+var _ = require('lodash');
 // TODO: ADD CHALK
 
 var logUtils = require('grunt-legacy-log-utils');
