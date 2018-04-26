@@ -16,10 +16,7 @@ var util = require('util');
 var hooker = require('hooker');
 // Requiring this here modifies the String prototype!
 var colors = require('colors');
-// The upcoming lodash 2.5+ should remove the need for underscore.string.
 var _ = require('lodash');
-_.str = require('underscore.string');
-_.mixin(_.str.exports());
 // TODO: ADD CHALK
 
 var logUtils = require('grunt-legacy-log-utils');
