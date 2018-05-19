@@ -1,7 +1,7 @@
 {
   "name": "grunt-legacy-log",
   "description": "The Grunt 0.4.x logger.",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "author": "\"Cowboy\" Ben Alman (http://benalman.com/)",
   "homepage": "http://gruntjs.com/",
   "repository": {
