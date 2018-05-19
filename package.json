@@ -24,7 +24,7 @@
     "legacy"
   ],
   "dependencies": {
-    "colors": "~1.2.5",
+    "colors": "~1.1.2",
     "grunt-legacy-log-utils": "~2.0.0",
     "hooker": "~0.2.3",
     "lodash": "~4.17.5"
