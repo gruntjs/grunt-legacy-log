@@ -1,3 +1,8 @@
+- v3.0.1:
+  - date: 2026-04-07
+  - changes:
+    - Update lodash to fix security warning ([#35](https://github.com/gruntjs/grunt-legacy-log/issues/35))
+    - Update to latest grunt-legacy-log-utils
 - v3.0.0:
   - date: 2020-07-27
   - changes:
